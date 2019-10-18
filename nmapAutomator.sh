@@ -10,7 +10,7 @@ SECONDS=0
 
 usage(){
 echo -e ""
-echo -e "${RED}Usage: $0 <TARGET-IP> <TYPE>"
+echo -e "${RED}Usage: ./nmapAutomator.sh <TARGET-IP> <TYPE>"
 echo -e "${YELLOW}"
 echo -e "Scan Types:"
 echo -e "\tQuick:	Shows all open ports quickly (~15 seconds)"
@@ -333,17 +333,17 @@ for line in $file; do
 	if [[ ! -z `echo "${line}" | grep -i http` ]]; then
 		port=`echo "${line}" | cut -d "/" -f 1`
 		if [[ ! -z `echo "${line}" | grep -w "IIS"` ]]; then
-			pages=".html,.asp,.php"
+			pages="html,asp,php"
 		else
-			pages=".html,.php"
+			pages="html,php"
 		fi
 		if [[ ! -z `echo "${line}" | grep ssl/http` ]]; then
 			#echo "sslyze --regular $1 | tee recon/sslyze_$1_$port.txt"
 			echo "sslscan $1 | tee recon/sslscan_$1_$port.txt"
-			echo "gobuster dir -w /usr/share/wordlists/dirb/common.txt -l -t 30 -e -k -x $pages -u https://$1:$port -o recon/gobuster_$1_$port.txt"
+			echo "gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 30 -k -x $pages -u https://$1:$port -o recon/gobuster_$1_$port.txt"
 			echo "nikto -host https://$1:$port -ssl | tee recon/nikto_$1_$port.txt"
 		else
-			echo "gobuster dir -w /usr/share/wordlists/dirb/common.txt -l -t 30 -e -k -x $pages -u http://$1:$port -o recon/gobuster_$1_$port.txt"
+			echo "gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 30 -x $pages -u http://$1:$port -o recon/gobuster_$1_$port.txt"
 			echo "nikto -host $1:$port | tee recon/nikto_$1_$port.txt"
 		fi
 		echo ""
@@ -396,7 +396,7 @@ if [ -f nmap/UDP_$1.nmap ] && [[ ! -z `cat nmap/UDP_$1.nmap | grep open | grep -
 	echo -e "${YELLOW}SNMP Recon:"
 	echo -e "${NC}"
 	echo "snmp-check $1 -c public | tee recon/snmpcheck_$1.txt"
-	echo "snmpwalk -Os -c public -v $1 | tee recon/snmpwalk_$1.txt"
+	echo "snmpwalk -Os -c public -v1 $1 | tee recon/snmpwalk_$1.txt"
 	echo ""
 fi
 
